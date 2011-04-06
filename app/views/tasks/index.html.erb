@@ -1,7 +1,8 @@
-<% @tasks.each_with_index do |task, i| %>
-  <h2><%= "#{i+1}: #{task.title}" %></h2>
+<%= render :partial => 'task' %>
+<% @tasks.each do |task| %>
+  <li class='task'><%= render :partial => 'task', :locals => { :my_task => task } %></li>
 <% end %>
-<% if @task.errors.any? %>
+<% if @task && @task.errors.any? %>
   <div id="error_explanation">
     <h2><%= pluralize(@task.errors.count, "error") %> prohibited this task from being saved:</h2>
 
@@ -13,6 +14,7 @@
   </div>
 <% end %>
 
+<br>
 <%= form_tag(:controller => :tasks, :action => :create, :method => :post) do %>
   <%= label_tag("New task: ") %>
   <%= text_field_tag(:title) %>
