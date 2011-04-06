@@ -1,11 +1,25 @@
 Rudo::Application.routes.draw do
+  get "log_in" => "sessions#new", :as => "log_in"
+  get "log_out" => "sessions#destroy", :as => "log_out"
+
+  get "sign_up" => "users#new", :as => "sign_up"
+  root :to => "sessions#new"
+  resources :users do
+    resources :tasks do
+      member do
+        post :done
+      end
+    end
+  end
+
+  resources :sessions
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
   # Sample of regular route:
   #   match 'products/:id' => 'catalog#view'
-  match 'tasks/create' => 'tasks#create'
-  match 'tasks/done/:id' => 'tasks#done', :as => 'finish_task'
+  
   # Keep in mind you can assign values other than :controller and :action
 
   # Sample of named route:
@@ -50,7 +64,6 @@ Rudo::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => "tasks#index"
 
   # See how all your routes lay out with "rake routes"
 

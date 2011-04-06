@@ -1,20 +1,33 @@
 class TasksController < ApplicationController
+
   def index
-    @tasks = Task.unfinished_tasks
+    @task = Task.new
+    @tasks = current_user.tasks.unfinished
   end
 
   def create
-    @task = Task.new(:title => params[:title])
+    @task = Task.new(params[:task])
+    current_user.tasks << @task
     if @task.save
-      redirect_to '/'
+      if request.xhr?
+        render :json => { :title => @task.title }
+      else
+        redirect_to user_tasks_url(current_user)
+      end
     else
-      @tasks = Task.unfinished_tasks
-      render "index"
+      if request.xhr?
+        render :json => @task.errors, :status => :unprocessable_entity
+      else
+        @tasks = current_user.tasks.unfinished
+        render 'index'
+      end
     end
   end
 
   def done
-    Task.find(params[:id]).update_attribute(:done_date, Time.now)
+    a = current_user.tasks.where(:id => params[:id]).first
+    a.done_date = Time.now
+    a.save
     redirect_to '/'
   end
 end
